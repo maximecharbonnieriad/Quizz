@@ -315,8 +315,6 @@
         <div id="error" class="error hidden"></div>
         
         <form id="quizForm">
-            <!-- QUESTIONS SUR L'ÉTAT D'ESPRIT & MOTIVATION -->
-            
             <div class="question-section active" data-question="1">
                 <div class="question-number">Question 1/12</div>
                 <div class="question-text">Pourquoi veux-tu devenir mandataire immobilier ?</div>
@@ -568,8 +566,8 @@
                 <div class="score-badge" id="scoreBadge">Score: 30/30</div>
                 <p id="resultText">Vous avez tous les profils pour réussir comme agent immobilier iad.</p>
                 <div class="cta-box">
-                    ✅ Résultats envoyés sur WhatsApp !<br>
-                    Vérifiez votre téléphone
+                    ✅ Résultats envoyés !<br>
+                    Maxime vous contactera rapidement 🚀
                 </div>
             </div>
 
@@ -579,42 +577,62 @@
                 <button type="button" class="btn-primary" id="nextBtn" onclick="changeQuestion(1)">Suivant →</button>
             </div>
 
-            <div class="step-indicator" id="stepIndicator">Question 1 sur 11</div>
+            <div class="step-indicator" id="stepIndicator">Question 1 sur 13</div>
         </form>
     </div>
 
     <script>
-        const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSd_EXAMPLE_FORM_ID/formResponse';
-        const FORM_FIELD_MAPPINGS = {
-            'entry.123456789': 'name',      // Remplacer par votre ID
-            'entry.987654321': 'email',     // Remplacer par votre ID
-            'entry.555555555': 'phone',     // Remplacer par votre ID
-            'entry.666666666': 'score',     // Remplacer par votre ID
-            'entry.777777777': 'level',     // Remplacer par votre ID
+        // ✅ SEULE LIGNE À MODIFIER : colle ici l'URL de ton webhook n8n
+        const N8N_WEBHOOK_URL = 'https://maximecharbonnier.app.n8n.cloud/webhook-test/quiz-google-form;
+
+        const QUESTION_LABELS = {
+            q1: "Pourquoi veux-tu devenir mandataire ?",
+            q2: "État d'esprit face aux défis",
+            q3: "Ce qui te motive au travail",
+            q4: "Rapport travail / revenus",
+            q5: "Environnement de travail idéal",
+            q6: "Quand veux-tu réussir financièrement ?",
+            q7: "Réaction face aux critiques",
+            q8: "Ce qui te bloque pour entreprendre",
+            q9: "Définition du succès",
+            q10: "Crois-tu pouvoir réussir ?",
+            q11: "Rapport à la vision long terme",
+            q12: "Ce que tu regretterais de ne pas essayer"
+        };
+
+        const QUESTION_VALUES = {
+            q1: { "3": "Liberté financière et indépendance totale", "2": "Gagner plus tout en restant flexible", "1": "J'hésite encore" },
+            q2: { "3": "J'apprends de mes échecs et je persévère", "2": "J'essaie mais j'ai besoin de soutien", "1": "Je préfère éviter les risques" },
+            q3: { "3": "Créer quelque chose de personnel", "2": "Gagner de l'argent avec un bon équilibre", "1": "Avoir un travail sympa sans trop de stress" },
+            q4: { "3": "Plus j'en fais, plus je gagne", "2": "Oui mais j'aime aussi la sécurité d'une base", "1": "Je préfère un salaire fixe" },
+            q5: { "3": "Seul avec mes objectifs clairs", "2": "Un mix entre autonomie et cadre structuré", "1": "Dans une équipe avec des règles" },
+            q6: { "3": "Rapidement - je suis prêt à tout donner", "2": "Dans 2-3 ans avec du travail régulier", "1": "À long terme, je ne suis pas pressé" },
+            q7: { "3": "Je les utilise comme feedback", "2": "Ça m'affecte un peu mais je rebondis", "1": "C'est difficile, ça me décourage" },
+            q8: { "3": "Rien - j'ai juste besoin de la bonne structure", "2": "Quelques doutes, mais je peux les surmonter", "1": "La peur de l'échec" },
+            q9: { "3": "Bâtir quelque chose de durable et rentable", "2": "Gagner bien tout en gardant du temps libre", "1": "Avoir un travail sympa sans trop de stress" },
+            q10: { "3": "Oui, j'ai une conviction profonde", "2": "Je l'espère, avec le bon support", "1": "Je ne suis pas sûr" },
+            q11: { "3": "J'ai une vision claire de mes 5 prochaines années", "2": "Je sais où je veux aller globalement", "1": "Je préfère vivre au jour le jour" },
+            q12: { "3": "Ne pas avoir tenté d'être indépendant", "2": "Rester en retrait sans prendre de risques", "1": "Pas vraiment, ma vie actuelle me convient" }
         };
 
         let currentQuestion = 1;
-        const totalQuestions = 13; // 12 questions + formulaire de contact
+        const totalQuestions = 13;
         let answers = {};
 
-        const SCORE_THRESHOLDS = {
-            high: 28,
-            medium: 18,
-            low: 0
-        };
+        const SCORE_THRESHOLDS = { high: 28, medium: 18, low: 0 };
 
         const RESULT_TEXTS = {
             high: {
                 title: "🎯 Profil Excellent !",
-                text: "Vous avez tous les atouts pour réussir en tant que mandataire immobilier ! Votre capital, votre mentalité entrepreneuriale et votre capacité à bâtir un réseau font de vous un candidat idéal pour développer votre propre fond de commerce. Cette opportunité d'indépendance avec un accompagnement structuré pourrait être parfaite pour vous."
+                text: "Vous avez tous les atouts pour réussir en tant que mandataire immobilier ! Votre mentalité entrepreneuriale et votre capacité à bâtir un réseau font de vous un candidat idéal."
             },
             medium: {
                 title: "💪 Bon Potentiel",
-                text: "Vous avez de bonnes bases pour devenir mandataire immobilier. Certains domaines comme la gestion du capital ou le recrutement de réseau pourraient être renforcés, mais ce sont des compétences qui s'apprennent avec la bonne structure. Notre formation complète vous permettra de combler les lacunes et de transformer votre fond de commerce en succès."
+                text: "Vous avez de bonnes bases pour devenir mandataire immobilier. Notre formation complète vous permettra de combler les lacunes et de transformer votre fond de commerce en succès."
             },
             low: {
                 title: "🤔 À Réfléchir",
-                text: "Le métier de mandataire immobilier requiert des qualités et une préparation spécifiques. Ce diagnostic montre quelques points à travailler avant de vous lancer. Cela ne signifie pas que c'est impossible, mais qu'une discussion approfondie serait utile pour explorer vos véritables motivations et votre disponibilité."
+                text: "Le métier de mandataire immobilier requiert des qualités spécifiques. Une discussion approfondie serait utile pour explorer vos véritables motivations."
             }
         };
 
@@ -624,7 +642,6 @@
         }
 
         function showQuestion(num) {
-            // Masquer toutes les questions
             document.querySelectorAll('.question-section').forEach(q => q.classList.remove('active'));
             document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
             document.getElementById('results').classList.remove('active');
@@ -636,7 +653,6 @@
                 document.querySelector('.form-section[data-question="contact"]').classList.add('active');
             }
 
-            // Mettre à jour les boutons
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
 
@@ -662,7 +678,7 @@
                     alert('Veuillez répondre à la question avant de continuer');
                     return;
                 }
-                answers[`q${currentQuestion}`] = parseInt(answer.value);
+                answers[`q${currentQuestion}`] = answer.value;
             }
 
             currentQuestion += direction;
@@ -674,7 +690,6 @@
         }
 
         async function submitQuiz() {
-            // Valider le formulaire de contact
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const phone = document.getElementById('phone').value;
@@ -684,71 +699,74 @@
                 return;
             }
 
-            // Calculer le score
             let score = 0;
             for (let i = 1; i <= 12; i++) {
-                score += answers[`q${i}`] || 0;
+                score += parseInt(answers[`q${i}`] || 0);
             }
 
-            // Déterminer le niveau
             let level = 'low';
             if (score >= SCORE_THRESHOLDS.high) level = 'high';
             else if (score >= SCORE_THRESHOLDS.medium) level = 'medium';
 
             const resultData = RESULT_TEXTS[level];
 
-            // Afficher les résultats
             document.querySelector('.form-section[data-question="contact"]').classList.remove('active');
             document.getElementById('resultTitle').textContent = resultData.title;
             document.getElementById('resultText').textContent = resultData.text;
             document.getElementById('scoreBadge').textContent = `Score: ${score}/36`;
             document.getElementById('results').classList.add('active');
 
-            // Boutons finaux
             const buttonGroup = document.querySelector('.button-group');
             buttonGroup.innerHTML = `
                 <button type="button" class="btn-secondary" onclick="location.reload()">← Recommencer</button>
                 <button type="button" class="btn-primary" onclick="shareOnWhatsApp('${name}', '${score}')">Partager sur WhatsApp</button>
             `;
 
-            // Envoyer les données à Google Forms
+            // ✅ Envoi vers n8n webhook
             try {
-                await sendToGoogleForms(name, email, phone, score, level);
+                await sendToN8N(name, email, phone, score, level);
             } catch (error) {
-                console.log('Erreur envoi Google Forms:', error);
+                console.log('Erreur envoi webhook:', error);
             }
 
             updateProgress();
             window.scrollTo(0, 0);
         }
 
-        async function sendToGoogleForms(name, email, phone, score, level) {
-            // Formation des données pour Google Forms
-            const formData = new FormData();
-            formData.append('entry.123456789', name);        // À personnaliser
-            formData.append('entry.987654321', email);       // À personnaliser
-            formData.append('entry.555555555', phone);       // À personnaliser
-            formData.append('entry.666666666', score);       // À personnaliser
-            formData.append('entry.777777777', level);       // À personnaliser
-
-            try {
-                await fetch(GOOGLE_FORM_URL, {
-                    method: 'POST',
-                    body: formData,
-                    mode: 'no-cors'
-                });
-            } catch (error) {
-                console.error('Erreur:', error);
+        async function sendToN8N(name, email, phone, score, level) {
+            // Construire les réponses lisibles avec les labels
+            const reponsesDetaillees = {};
+            for (let i = 1; i <= 12; i++) {
+                const key = `q${i}`;
+                const val = answers[key];
+                const label = QUESTION_LABELS[key] || key;
+                const texte = QUESTION_VALUES[key]?.[val] || val;
+                reponsesDetaillees[label] = texte;
             }
+
+            const data = {
+                nom: name,
+                email: email,
+                telephone: phone,
+                score: `${score}/36`,
+                niveau: level === 'high' ? 'Excellent' : level === 'medium' ? 'Bon potentiel' : 'A retravailler',
+                reponses: reponsesDetaillees,
+                date: new Date().toLocaleString('fr-FR')
+            };
+
+            await fetch(N8N_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
         }
 
         function shareOnWhatsApp(name, score) {
-            const text = `Bonjour Maxime ! Je viens de compléter ton quiz agent immobilier iad. Mon score : ${score}/30. Mon nom : ${name}. Peux-tu me contacter pour la suite ? 🤔📱`;
+            const text = `Bonjour Maxime ! Je viens de compléter ton quiz agent immobilier iad. Mon score : ${score}/36. Mon nom : ${name}. Peux-tu me contacter pour la suite ?`;
             const whatsappUrl = `https://wa.me/33612345678?text=${encodeURIComponent(text)}`;
             window.open(whatsappUrl, '_blank');
         }
 
-        // Initialiser
         showQuestion(1);
     </script>
 </body>
